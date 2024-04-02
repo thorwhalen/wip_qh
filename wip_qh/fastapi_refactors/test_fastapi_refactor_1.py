@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
-from qh.scrap.fastapi_refactors.fastapi_refactor_1 import app as default_app
-from qh.scrap.fastapi_refactors.fastapi_refactor_base import backend_mall
+from wip_qh.fastapi_refactors.fastapi_refactor_1 import app as default_app
+from wip_qh.fastapi_refactors.fastapi_refactor_base import backend_mall
 
 
 def test_fastapi_refactor_app(app=default_app):
