@@ -1,6 +1,6 @@
 """A simple fastAPI app, to be refactored"""
 
-from typing import Callable, MutableMapping
+from typing import Callable, MutableMapping, Any
 from dataclasses import dataclass
 
 URI_TYPE = str
@@ -9,6 +9,7 @@ StoreFactory = Callable[[URI_TYPE], MutableMapping]
 
 # -------------------------------------------------------------------------------------
 # The objects we want to dispatch as http services
+
 
 def random_integer(smallest: int = 1, highest: int = 10):
     """Return a random integer between smallest and highest"""
@@ -23,8 +24,8 @@ def greeter(greeting: str, name: str = 'world', n: int = 1):
 
 
 # A dict (which will be initialized with some data next)
-# This dict should be able to be replaced with any MutableMapping interface 
-# to any persisted data source, or aggregate thereof, 
+# This dict should be able to be replaced with any MutableMapping interface
+# to any persisted data source, or aggregate thereof,
 # so it represents any data source/target a web service might have
 backend_mall = {}
 
@@ -47,7 +48,7 @@ _backend_mall_init = {
 }
 
 
-def reset_backend_mall():
+def reset_backend_mall(backend_mall: dict = backend_mall):
     """Reset the backend_mall to its initial state"""
     backend_mall.clear()
     backend_mall.update(deepcopy(_backend_mall_init))
@@ -55,10 +56,31 @@ def reset_backend_mall():
 
 reset_backend_mall()
 
+
 # A util to get a user's data
 def get_user_data(user: str):
     """Get the data for given user"""
     return backend_mall[user]
+
+
+store_getter = get_user_data
+
+
+def get_store_list(user: str):
+    store = store_getter(user)
+
+    return list(store)
+
+
+def get_store_value(user: str, key: str):
+    store = store_getter(user)
+    return store[key]
+
+
+def set_store_value(user: str, key: str, value: Any):
+    store = store_getter(user)
+    store[key] = value
+    return {"message": "Value set successfully"}
 
 
 # -------------------------------------------------------------------------------------

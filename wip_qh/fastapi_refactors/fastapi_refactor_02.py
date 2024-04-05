@@ -41,10 +41,10 @@ def set_store_value(user: str, key: str, value: Any):
 # Configurations for each endpoint
 configs = {
     get_random_integer: {"method": 'get', "path": "/random_integer"},
-    greet: {"method": 'get', "path": "/greeter/{greeting}/{name}"},
+    greet: {"method": 'get', "path": "/greeter/{greeting}"},
     get_store_list: {"method": 'get', "path": "/store_list/{user}"},
-    get_store_value: {"method": 'get', "path": "/store_get/{user}/{key}"},
-    set_store_value: {"method": 'post', "path": "/store_set/{user}/{key}"},
+    get_store_value: {"method": 'get', "path": "/store_get/{user}"},
+    set_store_value: {"method": 'post', "path": "/store_set/{user}"},
 }
 
 
