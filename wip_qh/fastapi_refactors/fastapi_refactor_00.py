@@ -23,17 +23,49 @@ def greeter(greeting: str, name: str = 'world', n: int = 1):
     return '\n'.join(f"{greeting}, {name}!" for _ in range(n))
 
 
-# A dict (which will be initialized with some data next)
-# This dict should be able to be replaced with any MutableMapping interface
-# to any persisted data source, or aggregate thereof,
-# so it represents any data source/target a web service might have
-backend_mall = {}
-
-
 # -------------------------------------------------------------------------------------
 # This section initializes the backend_mall with some data, in place
 
 from copy import deepcopy
+from dol import Store
+
+
+def _mk_test_mapping(mapping: MutableMapping):
+    """Make a test mapping. Simply wraps a mapping with a Store object, 
+    and adds a `_is_a_test_mapping = True` attribute so that it will be recognized 
+    as a test mapping.
+
+    The reason for having the `_is_a_test_mapping = True` attribute is to make it 
+    a bit more difficult to use an important data source (DB etc.) as a test mapping,
+    since the tests will empty and repopulate the mapping before the test runs. 
+
+    The tests will check to see if a mapping is marked as being a test mapping 
+    before running the tests, so a user must explicitly mark their mapping as a test
+    mapping to use it in the tests.
+
+    """
+    store = Store(mapping)
+    store._is_a_test_mapping = True
+    return store
+
+
+def is_a_test_mapping(mapping: MutableMapping):
+    """Check if the mapping is a test mapping"""
+    return getattr(mapping, '_is_a_test_mapping', False) is True
+
+
+def reset_backend_mall(test_mapping: dict):
+    """Reset the backend_mall to its initial state"""
+    if is_a_test_mapping(test_mapping):
+        keys = list(test_mapping.keys())
+        for key in keys:
+            del test_mapping[key]
+        test_mapping.update(deepcopy(_backend_mall_init))
+    else:
+        raise ValueError(
+            "Your data source is not test mapping, so I won't reset it."
+        )
+
 
 _backend_mall_init = {
     "alice": {
@@ -47,14 +79,12 @@ _backend_mall_init = {
     },
 }
 
-
-def reset_backend_mall(backend_mall: dict = backend_mall):
-    """Reset the backend_mall to its initial state"""
-    backend_mall.clear()
-    backend_mall.update(deepcopy(_backend_mall_init))
-
-
-reset_backend_mall()
+# A dict (which will be initialized with some data next)
+# This dict should be able to be replaced with any MutableMapping interface
+# to any persisted data source, or aggregate thereof,
+# so it represents any data source/target a web service might have
+backend_mall = _mk_test_mapping({})
+reset_backend_mall(backend_mall)
 
 
 # A util to get a user's data
@@ -63,7 +93,7 @@ def get_user_data(user: str):
     return backend_mall[user]
 
 
-store_getter = get_user_data
+store_getter = get_user_data  # alias to point out the general purpose of the function
 
 
 def get_store_list(user: str):
@@ -79,6 +109,7 @@ def get_store_value(user: str, key: str):
 
 def set_store_value(user: str, key: str, value: Any):
     store = store_getter(user)
+    # print(f"Setting {key=} to {value=}")
     store[key] = value
     return {"message": "Value set successfully"}
 

@@ -26,18 +26,26 @@ def test_fastapi_refactor_app(app=apps, verbose: Union[int, bool] = DFLT_VERBOSE
         return
 
     client = TestClient(app)
+    reset_backend_mall(backend_mall)
 
     def test_get_random_integer():
         __clog("    test_get_random_integer")
-        response = client.get("/random_integer")
-        assert response.status_code == 200
-        assert isinstance(response.json(), int)
+        response_1 = client.get("/random_integer")
+        assert response_1.status_code == 200
+        assert isinstance(response_1.json(), int)
+        response_2 = client.get("/random_integer?smallest=11&highest=11")
+        # the response should always be 11
+        assert response_2.json() == 11, f"Expected 11. Got: {response_2.json()=}"
+
 
     def test_greeter():
         __clog("    test_greeter")
-        response = client.get("/greeter/Hi?name=John")
-        assert response.status_code == 200
-        assert response.json() == "Hi, John!", f"Got: {response.json()=}"
+        response_1 = client.get("/greeter/Hi?name=John")
+        assert response_1.status_code == 200
+        assert response_1.json() == "Hi, John!", f"Got: {response_1.json()=}"
+        # try the n argument
+        assert client.get('/greeter/Ciao?n=2').json() == 'Ciao, world!\nCiao, world!'
+
 
     def test_get_store_list():
         __clog("    test_get_store_list")
@@ -48,6 +56,7 @@ def test_fastapi_refactor_app(app=apps, verbose: Union[int, bool] = DFLT_VERBOSE
         assert response.status_code == 200
         assert isinstance(response.json(), list)
         assert response.json() == keys, f"Got: {response.json()=}"
+
 
     def test_get_store_value():
         __clog("    test_get_store_value")
@@ -65,18 +74,19 @@ def test_fastapi_refactor_app(app=apps, verbose: Union[int, bool] = DFLT_VERBOSE
         user = next(iter(backend_mall))
         keys = sorted(backend_mall[user].keys())
         key = keys[0]
-        new_value = {"some_key": "some_value"}
-        url = f"/store_set/{user}?key={key}"
-        __clog(f"   {url=}: {new_value=}")
+        val = {"some_key": "some_value"}
 
-        response = client.post(f"{url}", json={"value": new_value})
+        url = f"/store_set/{user}?key={key}"
+        __clog(f"   {url=}: {val=}")
+
+        response = client.post(f"{url}", json={"value": val})
         assert (
             response.status_code == 200
         ), f"Status code is {response.status_code}: {response.json()=}"
         assert response.json() == {"message": "Value set successfully"}
-        assert backend_mall[user][key] == new_value, (
+        assert backend_mall[user][key] == val, (
             f"  Got: {backend_mall[user][key]=}\n"
-            f"  Expected: {new_value=}"
+            f"  Expected: {val=}"
         )
         # clean up (TODO: do with with block instead)
         reset_backend_mall(backend_mall)
@@ -90,4 +100,4 @@ def test_fastapi_refactor_app(app=apps, verbose: Union[int, bool] = DFLT_VERBOSE
     test_set_store_value()
 
 
-test_fastapi_refactor_app()
+# test_fastapi_refactor_app()

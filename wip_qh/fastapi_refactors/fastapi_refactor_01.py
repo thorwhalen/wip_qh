@@ -6,13 +6,12 @@ from typing import Any
 from wip_qh.fastapi_refactors.fastapi_refactor_00 import (
     random_integer,
     greeter,
-    get_user_data,
+    get_store_list,
+    get_store_value,
+    set_store_value,
 )
 
 app = FastAPI()
-
-
-store_getter = get_user_data
 
 
 # @app.get("/random_integer")
@@ -36,33 +35,32 @@ def _random_integer(
 
 @app.get("/greeter/{greeting}")
 def _greeter(
-    greeting: str,
-    name: Optional[str] = Query('world'),
-    n: Optional[int] = Query(1),
+    greeting: str,  # extract name from path
+    name: str = Query('world'),  # extract name from query string (default is 'world')
+    n: int = Query(1),
 ):
     """Endpoint to return a greeting"""
     return greeter(greeting, name, n)
 
 
 @app.get("/store_list/{user}")
-def get_store_list(user: str):
-    store = store_getter(user)
-
-    return list(store)
+def _get_store_list(user: str):
+    return get_store_list(user)
 
 
 @app.get("/store_get/{user}")
-def get_store_value(user: str, key: str = Query()):
-    store = store_getter(user)
-    return store[key]
+def _get_store_value(user: str, key: str = Query()):
+    return get_store_value(user, key)
 
 
 @app.post("/store_set/{user}")
-def set_store_value(user: str, key: str = Query(), value=Body(..., imbed=True)):
+def _set_store_value(
+    user: str,
+    key: str = Query(),
+    value=Body(..., imbed=True),  # extract value from body
+):
     value = value['value']  # ingress transformation
-    store = store_getter(user)
-    store[key] = value
-    return {"message": "Value set successfully"}
+    return set_store_value(user, key, value)
 
 
 this_file_name = __file__.split("/")[-1].split(".")[0]
