@@ -56,7 +56,7 @@ DefaultType = Union[VT, Callable[[EndpointBackend, ApiRouteKwargs], VT]]
 def complete_route_specs(route_specs: dict):
     route_specs = deepcopy(route_specs)
     for func, spec in route_specs.items():
-        spec['api_route_kwargs'] = resolve_api_route_kwargs(func, spec)
+        spec['api_route_kwargs'] = resolve_api_route_kwargs(func, spec['api_route_kwargs'])
     return route_specs
 
 

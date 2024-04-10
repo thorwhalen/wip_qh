@@ -25,6 +25,40 @@ Helpers:
 # -------------------------------------------------------------------------------------
 # utils
 
+
+def value_transformed_dict_equality(d1=None, d2=None, value_transformer=lambda x: x):
+    """
+    Recursively compare two dictionaries,
+    applying a value transformer to the values before comparison when the value is not
+    itself a dict
+
+    >>> d1 = {'a': 'a', 'b': {'c': 'bc'}}
+    >>> d2 = {'a': 'A', 'b': {'c': 'bC'}}
+    >>> d1 == d2
+    False
+    >>> compare = value_transformed_dict_equality(value_transformer=str.upper)
+    >>> compare(d1, d2)
+    True
+    """
+    if d1 is None and d2 is None:
+        from functools import partial
+
+        return partial(
+            value_transformed_dict_equality, value_transformer=value_transformer
+        )
+    else:
+        if d1.keys() != d2.keys():
+            return False
+        for k in d1:
+            if isinstance(d1[k], dict):
+                if not value_transformed_dict_equality(d1[k], d2[k], value_transformer):
+                    return False
+            else:
+                if value_transformer(d1[k]) != value_transformer(d2[k]):
+                    return False
+        return True
+
+
 # TODO: Handle all methods (not only get and post) and method arguments (not only path)
 # TODO: Validate configs (use pydantic)
 # TODO: Add name=name_of_obj(function) to method kwargs
