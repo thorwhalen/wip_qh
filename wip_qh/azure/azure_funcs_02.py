@@ -6,8 +6,7 @@ The way you'd see a "Hello, World!" in a Azure Functions tutorial.
 
 from i2 import Sig
 
-
-from wip_qh.azure.core_logic import (
+from .core_logic import (
     list_funcs as _list_funcs,
     apply_func as _apply_func,
 )
@@ -24,24 +23,6 @@ from dataclasses import dataclass
 from typing import Callable, Any, Mapping
 
 FunctionOutput = Any
-
-
-@dataclass
-class AzureWrapOld:
-    func: Callable
-    extract_params: Callable[[af.HttpRequest], dict]
-
-    def __call__(self, req: af.HttpRequest) -> af.HttpResponse:
-        try:
-            params = self.extract_params(req)
-            result = self.func(**params)
-            return af.HttpResponse(
-                json.dumps(result), status_code=200, mimetype="application/json"
-            )
-        except KeyError as e:
-            return af.HttpResponse(str(e), status_code=404)
-        except Exception as e:
-            return af.HttpResponse(str(e), status_code=400)
 
 
 def default_extract_params(

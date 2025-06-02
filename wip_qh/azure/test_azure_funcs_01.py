@@ -29,6 +29,22 @@ def test_app(app):
     test_apply_func_unknown_function(apply_func)
 
 
+def test_requests(root_url='http://localhost:7071/api/'):
+    from urllib.parse import urljoin
+    from functools import partial
+    import requests
+
+    get_url = partial(urljoin, root_url)
+
+    r1 = requests.get(get_url('list_funcs'))
+    assert r1.status_code == 200
+    assert r1.json() == ['plus_one', 'times_two']
+
+    r2 = requests.post(get_url('apply_func'), json={'func_name': 'plus_one', 'arg': 42})
+    assert r2.status_code == 200
+    assert r2.json() == 43
+
+
 def test_list_funcs_route(list_funcs):
     # Create a dummy HTTP GET request for the list_funcs route.
     req = af.HttpRequest(method="GET", url="/api/list_funcs", params={}, body=None)
