@@ -2,4 +2,4 @@
 
 From FastAPI to qh: Incrementally refactoring towards an i2i setup
 
-See [qh_wip](https://github.com/thorwhalen/wip_qh/blob/main/qh_wip.ipynb) for a presentation of the contents.
+See [qh_wip](https://github.com/thorwhalen/wip_qh/blob/main/misc/qh_fastapi_wip.ipynb) for a presentation of the contents.
