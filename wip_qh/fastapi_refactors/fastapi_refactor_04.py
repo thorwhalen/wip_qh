@@ -42,7 +42,8 @@ expected_route_specs = {
 
 from i2 import mk_sentinel
 from copy import deepcopy
-from typing import VT, KT, Callable, Union
+from typing import VT, KT, Union
+from collections.abc import Callable
 
 NotProvided = mk_sentinel('NotProvided')
 

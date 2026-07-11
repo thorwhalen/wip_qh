@@ -20,7 +20,8 @@ app = af.FunctionApp(http_auth_level=af.AuthLevel.ANONYMOUS)
 
 from functools import partial
 from dataclasses import dataclass
-from typing import Callable, Any, Mapping
+from typing import Any
+from collections.abc import Callable, Mapping
 
 FunctionOutput = Any
 

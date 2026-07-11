@@ -1,6 +1,7 @@
 """A simple fastAPI app, to be refactored"""
 
-from typing import Callable, MutableMapping, Any
+from typing import Any
+from collections.abc import Callable, MutableMapping
 from dataclasses import dataclass
 
 URI_TYPE = str

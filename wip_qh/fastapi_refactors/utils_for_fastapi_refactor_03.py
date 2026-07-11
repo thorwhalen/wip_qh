@@ -70,7 +70,8 @@ def value_transformed_dict_equality(d1=None, d2=None, value_transformer=lambda x
 from fastapi.routing import APIRoute
 from fastapi import FastAPI
 from pydantic import BaseModel, create_model, Field, ValidationError
-from typing import Literal, Dict, Any, Callable, Type, T, Union, Iterable
+from typing import Literal, Dict, Any, Type, T, Union
+from collections.abc import Callable, Iterable
 from functools import partial
 import inspect
 from i2 import Sig, wrap, asis, name_of_obj
@@ -84,12 +85,12 @@ HTTPMethod = Literal[
 _api_route_arg_names = tuple(Sig(APIRoute).names)
 RouteMethodKeyword = Literal[_api_route_arg_names]  # type: ignore
 
-RouteSpec = Dict[RouteMethodKeyword, Any]
+RouteSpec = dict[RouteMethodKeyword, Any]
 
 
 def model_from_function(
     func: Callable, *, name=None, arbitrary_types_allowed=True
-) -> Type[BaseModel]:
+) -> type[BaseModel]:
     """
     Generates a Pydantic model based on the signature of the input function.
     Parameters without type annotations default to typing.Any.
@@ -137,7 +138,7 @@ def model_from_function(
         return create_model(name, __config__=Config, **model_attrs)
 
 
-def validate_dict_with_model(data: dict, model: Type[BaseModel]) -> dict:
+def validate_dict_with_model(data: dict, model: type[BaseModel]) -> dict:
     """
     Validate the data against a Pydantic model.
     If the data is invalid, a ValidationError is raised.

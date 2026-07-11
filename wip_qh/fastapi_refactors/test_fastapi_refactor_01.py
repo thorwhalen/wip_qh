@@ -13,7 +13,7 @@ apps = fastapi_refactor_apps()
 default_app = apps[DFLT_APP_INDEX]
 
 
-def test_fastapi_refactor_app(app=apps, verbose: Union[int, bool] = DFLT_VERBOSE):
+def test_fastapi_refactor_app(app=apps, verbose: int | bool = DFLT_VERBOSE):
     _clog = clog(verbose)
     if isinstance(verbose, int):
         verbose = verbose > 1
